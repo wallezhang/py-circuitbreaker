@@ -13,7 +13,7 @@ HALF_OPEN = 2
 class SlidingWindow(object):
     def __init__(self, rate, period, half_seconds, sample_count, step, threshold_percentage):
         """
-        滑动窗口实现类
+        SlidingWindow
         """
         self.rate = rate
         self.period = period
@@ -37,7 +37,7 @@ class SlidingWindow(object):
 
     def _calculate_failure_rate(self):
         """
-        计算失败率
+        Calculate the failure rate
         :return:
         """
         total, fail = 0, 0
@@ -64,8 +64,12 @@ class SlidingWindow(object):
         thread.start()
 
     def increase_tail(self):
+        """
+        slide the window and decide whether to create a new bucket
+        :return:
+        """
         while 1:
-            # 判断是否需要打开熔断器
+            # decide whether to open the breaker
             if self.status == CLOSE and self._total() > self.sample_count and self._calculate_failure_rate() > self._threshold_percentage:
                 self.set_open()
             if self.tail + 1 >= self.period / self.rate:
@@ -81,5 +85,9 @@ class SlidingWindow(object):
         self.status = HALF_OPEN
 
     def set_open(self):
+        """
+        Set the breaker status to OPEN
+        :return:
+        """
         self.status = OPEN
         threading.Timer(self.half_seconds / 1000, self._set_half_open).start()

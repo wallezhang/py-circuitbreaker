@@ -4,7 +4,7 @@ import threading
 
 class Bucket(object):
     """
-    滑动窗口中的桶对象，桶中包含两个计数器变量，失败和总量
+    The bucket of sliding window includes two counters, total and fail
     """
 
     def __init__(self):
@@ -14,8 +14,8 @@ class Bucket(object):
 
     def add_fail(self, step):
         """
-        失败数增加步长个单位，线程安全
-        :param step: 步长。默认为1
+        Add fail counter by step. Thread safe.
+        :param step: default is 1
         :return:
         """
         with self.lock:
@@ -24,8 +24,8 @@ class Bucket(object):
 
     def add_total(self, step):
         """
-        总数增加步长个单位，线程安全
-        :param step: 步长，默认为1
+        Add total counter by step. Thread safe.
+        :param step: default is 1
         :return:
         """
         with self.lock:

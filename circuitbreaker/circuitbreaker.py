@@ -9,17 +9,17 @@ import slidingwindow
 def circuit_breaker(window, judge_fail_func, fallback_func):
     def decorate(f):
         """
-        熔断装饰器
-        :param f: 原始函数
+        circuit breaker decorator
+        :param f
         :return:
         """
 
         @wraps(f)
         def wrapper(*args, **kwds):
-            # 验证是否初始化window变量
+            # Verify if the window parameter has been initialized
             if window is not None and callable(judge_fail_func) and callable(fallback_func):
                 res = None
-                # 检查熔断器状态
+                # Check circuit breaker status
                 if window.status == slidingwindow.CLOSE:
                     res = f(*args, **kwds)
                     if judge_fail_func(res):
@@ -46,7 +46,7 @@ def circuit_breaker(window, judge_fail_func, fallback_func):
                     else:
                         res = fallback_func(*args, **kwds)
                 return res
-            logging.error('熔断器初始化失败！')
+            logging.error('Circuit breaker is initialized failed!')
             return f(*args, **kwds)
 
         return wrapper
@@ -57,13 +57,13 @@ def circuit_breaker(window, judge_fail_func, fallback_func):
 def initialize_circuit_breaker(rate=1000, period=10 * 1000, volume_threshold=20, sleep_window_in_milliseconds=5000,
                                step=1, threshold_percentage=0.5):
     """
-    初始化熔断器
-    :param rate: 速率，检查健康状态的时间间隔，单位：毫秒，默认1000
-    :param period: 周期，多久内的失败率会导致熔断发生，单位：毫秒，默认10*1000
-    :param volume_threshold: 采集周期内的样本最少数量，默认20
-    :param sleep_window_in_milliseconds: 熔断半开的时间间隔，单位：毫秒，默认5000
-    :param step: 增长步长
-    :param threshold_percentage: 触发熔断的失败率，默认50%
+    Initialize circuit breaker
+    :param rate: The interval of checking health status, default is 1000ms
+    :param period: How long the circuit breaker will be opened, default is 10*1000ms
+    :param volume_threshold: The minimum sample size, default is 20
+    :param sleep_window_in_milliseconds: The HALF OPEN status duration, default is 5000ms
+    :param step: The counter's increased step size, default is 1
+    :param threshold_percentage: The failure rate, default is 50%
     :return:
     """
     window = slidingwindow.SlidingWindow(rate, period, sleep_window_in_milliseconds, volume_threshold, step,
